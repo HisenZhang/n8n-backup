@@ -1,0 +1,64 @@
+{
+  "active": false,
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2023-04-22T23:45:30.680Z",
+  "id": "1",
+  "name": "Send email via Gmail on workflow error",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        380,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "59aa1079-90e8-4d1a-a24b-edd298d9921c"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "subject": "=n8n Workflow Failure:  {{$json[\"workflow\"][\"name\"]}}",
+        "message": "=Workflow: {{$json[\"workflow\"][\"name\"]}}\nError: {{$json[\"execution\"][\"error\"][\"message\"]}}\nLast node executed: {{$json[\"execution\"][\"lastNodeExecuted\"]}}\nExecution URL: {{$json[\"execution\"][\"url\"]}}\nStacktrace:\n{{$json[\"execution\"][\"error\"][\"stack\"]}}",
+        "toList": [
+          "hisenzhang01@gmail.com"
+        ],
+        "additionalFields": {}
+      },
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        580,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "1fe4bc6a-4ff4-41e5-8fe2-44093d7c7361",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2023-04-23T02:45:37.000Z",
+  "versionId": "79a95364-2c56-422a-970e-b769a01c54a0"
+}
