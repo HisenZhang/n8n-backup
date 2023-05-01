@@ -1,0 +1,222 @@
+{
+  "active": true,
+  "connections": {
+    "Get the RSS Feed": {
+      "main": [
+        [
+          {
+            "node": "If it was published after yesterday",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Yesterdays Date": {
+      "main": [
+        [
+          {
+            "node": "Get the RSS Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If it was published after yesterday": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every Morning": {
+      "main": [
+        [
+          {
+            "node": "Get Yesterdays Date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2023-04-23T02:20:52.278Z",
+  "id": "3",
+  "name": "Sync RSS feed to Social Media",
+  "nodes": [
+    {
+      "parameters": {
+        "action": "calculate",
+        "value": "={{Date()}}",
+        "operation": "subtract",
+        "duration": 1,
+        "options": {}
+      },
+      "name": "Get Yesterdays Date",
+      "type": "n8n-nodes-base.dateTime",
+      "position": [
+        -220,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "5df4e541-067a-41ab-a37d-6c36fb5c24c1"
+    },
+    {
+      "parameters": {
+        "url": "http://w2sz.github.io/rss.xml"
+      },
+      "name": "Get the RSS Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        -40,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "5d3d3161-c2e6-47c8-97f9-f94788d84735"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "dateTime": [
+            {
+              "value1": "={{$json[\"pubDate\"]}}",
+              "value2": "={{$item(0).$node[\"Get Yesterdays Date\"].json.data}}"
+            }
+          ]
+        }
+      },
+      "name": "If it was published after yesterday",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        160,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "db1f9880-90eb-4d95-a67a-2a0b37a7f36a",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v15.0",
+        "node": "me",
+        "edge": "feed",
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $json.message }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "05782d8b-c595-45a0-a14b-772b78c6ae08",
+      "name": "Facebook Graph API",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        580,
+        180
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "7",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Create our Slack message\n// This will output a list of RSS items in the following format\n// Title - Description\nlet message = [];\nmessage += \"[RSS]\" + item.json.title + \": \"+ item.json.link + \"\\r\\n\"; \n\nreturn {json: {message}};"
+      },
+      "id": "a3afa5ad-acc1-4c8e-8cff-3b5efc86b9ee",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        360,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "hour": 8
+            }
+          ]
+        }
+      },
+      "name": "Every Morning",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -400,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "f00f894b-8402-4bce-b83f-8b2ad71ffa51"
+    },
+    {
+      "parameters": {
+        "sendTo": "hisenzhang01@gmail.com",
+        "subject": "RSS Synced",
+        "message": "w2sz.org RSS Synced to Social Media",
+        "options": {}
+      },
+      "id": "78b47bd1-b33e-46bf-8616-26f45b03797b",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        800,
+        180
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5",
+          "name": "Gmail account"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "settings": {},
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2023-04-30T04:08:15.000Z",
+  "versionId": "74821086-d889-4e1f-a37d-a7ac8fc0afe8"
+}
