@@ -1,0 +1,323 @@
+{
+  "active": true,
+  "connections": {
+    "Get All Repos": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Repo as zip": {
+      "main": [
+        [
+          {
+            "node": "Rename File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Download Repo as zip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename File": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Microsoft OneDrive",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Box",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "getLastTick",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "getLastTick": {
+      "main": [
+        [
+          {
+            "node": "Get All Repos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2023-04-29T23:00:38.460Z",
+  "id": "5",
+  "name": "Backup Research Repos",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://api.github.com/user/repos",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer 1170ef9877521997f67d21e2d0195492db940dcb"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "065c85df-6f96-481a-9a98-169cd7fe0368",
+      "name": "Get All Repos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        260,
+        320
+      ],
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "10",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 4
+            }
+          ]
+        }
+      },
+      "id": "f547ff41-80c8-4e50-a8f3-06398acf4577",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json[\"url\"] }}/zipball/",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubOAuth2Api",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "id": "489ea7b3-2841-41ce-8f06-1b3fe481a57a",
+      "name": "Download Repo as zip",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        640,
+        300
+      ],
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "10",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryData": true,
+        "name": "={{$binary.data.fileName}}",
+        "resolveData": true,
+        "parents": [
+          "1u-KBb61RzuwZpxKVWra1MX67GcuBzctp"
+        ],
+        "options": {}
+      },
+      "id": "a4ee79bb-a913-47f5-a80b-37dee0ac246a",
+      "name": "Upload to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [
+        1220,
+        180
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9",
+          "name": "Google Drive account"
+        }
+      },
+      "disabled": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "fileName": "={{ $json.name }}",
+        "parentId": "8CBB3C51F3734709%214140",
+        "binaryData": true
+      },
+      "id": "9cb9c72a-76ec-409d-8948-1b48254cbdc3",
+      "name": "Microsoft OneDrive",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        400
+      ],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "12",
+          "name": "Microsoft Drive account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "dateTime": [
+            {
+              "value1": "={{ $json.pushed_at }}",
+              "value2": "={{ $item(0).$node[\"getLastTick\"].json[\"data\"] }}"
+            }
+          ],
+          "string": [
+            {
+              "value1": "={{ $json.name }}",
+              "operation": "startsWith",
+              "value2": "research-"
+            }
+          ]
+        }
+      },
+      "id": "209bdfc7-fc47-4411-9a57-2ca355d73ab5",
+      "name": "Filter",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        420,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field\n// called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.binary.data.fileName = $node[\"Filter\"].json[\"name\"] + \" - \" + $node[\"Filter\"].json[\"pushed_at\"] + \".zip\";\n}\n\nreturn $input.all();"
+      },
+      "id": "2b5e379c-16d1-457d-baba-8c1c6fbc776a",
+      "name": "Rename File",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        800,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "={{ $node[\"Filter\"].json[\"name\"] }}-{{$node[\"Filter\"].json[\"pushed_at\"] }}.zip",
+        "binaryData": true,
+        "parentId": "205679911995"
+      },
+      "id": "b71524f7-9c5a-4c1b-8f25-4feffae64084",
+      "name": "Box",
+      "type": "n8n-nodes-base.box",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        620
+      ],
+      "credentials": {
+        "boxOAuth2Api": {
+          "id": "14",
+          "name": "Box account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "action": "calculate",
+        "value": "={{ $today }}",
+        "operation": "subtract",
+        "duration": 4,
+        "timeUnit": "hours",
+        "options": {}
+      },
+      "id": "d4057c84-c45f-4f7a-8110-b2c251927ebe",
+      "name": "getLastTick",
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 1,
+      "position": [
+        120,
+        320
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {},
+  "staticData": {
+    "node:Github Trigger": {
+      "webhookId": 412212112,
+      "webhookEvents": [
+        "push"
+      ]
+    },
+    "node:Schedule Trigger": {
+      "recurrencyRules": [
+        21
+      ]
+    }
+  },
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2023-05-01T01:00:00.000Z",
+  "versionId": "2f305382-005b-4e68-93b1-8288886384b1"
+}
