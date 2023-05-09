@@ -311,12 +311,12 @@
     },
     "node:Schedule Trigger": {
       "recurrencyRules": [
-        21
+        13
       ]
     }
   },
   "tags": [],
   "triggerCount": 1,
-  "updatedAt": "2023-05-08T01:00:00.000Z",
+  "updatedAt": "2023-05-08T17:00:00.000Z",
   "versionId": "851910b1-fa79-486b-ace3-5af1ee912946"
 }
