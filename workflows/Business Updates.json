@@ -1,0 +1,252 @@
+{
+  "active": true,
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quarterly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2023-05-08T20:21:42.867Z",
+  "id": "7",
+  "name": "Business Updates",
+  "nodes": [
+    {
+      "parameters": {
+        "binaryData": true,
+        "name": "={{ $json.Report }} - {{ $today.toFormat(\"MM/dd/yyyy\") }}",
+        "parents": [
+          "1Dnjf30Ms5x-q-JEh_BqdtM0mqp1k1KcL"
+        ],
+        "options": {}
+      },
+      "id": "bd740531-7412-4050-92bc-dc494ced0181",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.Link }}",
+        "options": {}
+      },
+      "id": "a5774eee-a72c-4055-84b9-bbe2f359a035",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        900,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w",
+          "mode": "list",
+          "cachedResultName": "Business Update Links",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "weekly-updates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "d6730965-a804-4da5-83a6-1b7d763db578",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        460,
+        360
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "16",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "f9c1bf27-6648-4af9-8d18-00780e18a7a5",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w",
+          "mode": "list",
+          "cachedResultName": "Business Update Links",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1605204358,
+          "mode": "list",
+          "cachedResultName": "quarterly-updates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sJJC84i13uBogj2uW85pEcuzvUsOUYW1xpWPZB32v4w/edit#gid=1605204358"
+        },
+        "options": {}
+      },
+      "id": "d8c4ce5e-3080-4b6b-83b9-84f969ed83de",
+      "name": "Google Sheets1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 3,
+      "position": [
+        460,
+        160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "16",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "monthsInterval": 3,
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "f55f4653-97d7-4076-8b4a-5a07078c6df8",
+      "name": "Quarterly Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        300,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "id": "be9cfa08-3628-4234-93b6-22291f73ae02",
+      "name": "Weekly Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        300,
+        360
+      ]
+    }
+  ],
+  "pinData": {},
+  "settings": {},
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrencyRules": []
+    },
+    "node:Quarterly Trigger": {
+      "recurrencyRules": []
+    },
+    "node:Weekly Trigger": {
+      "recurrencyRules": []
+    }
+  },
+  "tags": [],
+  "triggerCount": 2,
+  "updatedAt": "2023-05-09T01:50:18.000Z",
+  "versionId": "b3117c14-668e-4e29-bab9-0e0f69cf05f4"
+}
